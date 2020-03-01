@@ -77,7 +77,8 @@ class _HomePageState extends State<HomePage> {
   Widget _cardPerfil(BuildContext context, int index) {
     return GestureDetector(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ContasPage())).then((context){
+        debugPrint("id: ${perfis[index].id.toString()}");
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ContasPage(perfis[index].id))).then((context){
           _carregarPerfis();
         });
       },

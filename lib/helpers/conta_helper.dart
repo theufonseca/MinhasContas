@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:minhas_contas/helpers/perfil_helper.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -28,15 +29,16 @@ class ContaHelper {
     if(_db != null)
       return _db;
     else {
+      debugPrint("Iniciado");
       _db = await iniciarBanco();
       return _db;
     }
   }
   Future<Database> iniciarBanco() async {
     final String pathBancoDados = await getDatabasesPath();
-    final String path = join(pathBancoDados, "banco_minhas_contas.db");
+    final String path = join(pathBancoDados, "banco_minhas_contas_contas.db");
 
-    Database dbAberto = await openDatabase(path, version: 5, onCreate: (Database db, int novaVersao) async {
+    Database dbAberto = await openDatabase(path, version: 6, onCreate: (Database db, int novaVersao) async {
       db.execute("CREATE TABLE $tabelaConta ("
           "$colunaId INTEGER PRIMARY KEY,"
           "$colunaIdPerfil INTEGER,"
@@ -53,6 +55,33 @@ class ContaHelper {
           ")");
     });
 
+    return dbAberto;
+  }
+
+  Future<Conta> salvarConta(Conta conta) async {
+    Database _dbSalvar = await db;
+    conta.id = await _dbSalvar.insert(tabelaConta, conta.toMap());
+    debugPrint("id: ${conta.id}");
+    return conta;
+  }
+
+  Future<List> buscarTodasPorPerfil(int _idPerfil) async {
+    Database _dbBuscarTodas = await db;
+    List<Map> maps = await _dbBuscarTodas.rawQuery("SELECT * FROM $tabelaConta WHERE $colunaIdPerfil = ${_idPerfil}");
+    debugPrint("retornos: ${maps.length}");
+    List<Conta> contas = List();
+
+    for(Map m in maps){
+      contas.add(Conta.fromMap(m));
+      debugPrint("retornos: ${Conta.fromMap(m).idPerfil}");
+    }
+
+    return contas;
+  }
+
+  Future<int> deletarConta(int id) async {
+    Database _dbDeletar = await db;
+    return await _dbDeletar.delete(tabelaConta, where: "$colunaId = ?", whereArgs: [id]);
   }
 }
 
@@ -73,6 +102,8 @@ class Conta {
   Conta();
 
   Conta.fromMap(Map map){
+    debugPrint("IdPerfil ha: ${map[colunaIdPerfil]}");
+
     id = map[colunaId];
     idPerfil = map[colunaIdPerfil];
     apelido = map[colunaApelido];
@@ -106,6 +137,12 @@ class Conta {
       map[colunaId] = id;
 
     return map;
+  }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "${nomeBanco} - Tipo:${tipo} - Ag:${agencia} - Conta:${conta}-${digitoConta} - Cpf:${cpfCnpj}";
   }
 }
 

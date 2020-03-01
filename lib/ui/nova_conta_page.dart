@@ -1,11 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:minhas_contas/helpers/conta_helper.dart';
 
 class NovaContaPage extends StatefulWidget {
   @override
   _NovaContaPageState createState() => _NovaContaPageState();
+
+  int idPerfil;
+
+  NovaContaPage(this.idPerfil);
 }
 
 class _NovaContaPageState extends State<NovaContaPage> {
+
+  Conta minhaNovaConta;
+
+  final ContaHelper contaHelper = ContaHelper();
+
+  @override
+  void initState() {
+    super.initState();
+
+    minhaNovaConta = Conta();
+    minhaNovaConta.idPerfil = widget.idPerfil;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +52,9 @@ class _NovaContaPageState extends State<NovaContaPage> {
               ),
             ),
             TextField(
+              onChanged: (texto){
+                minhaNovaConta.apelido = texto;
+              },
               decoration: InputDecoration(
                 labelText: "Apelido da conta",
                 labelStyle: TextStyle(
@@ -42,6 +63,9 @@ class _NovaContaPageState extends State<NovaContaPage> {
               ),
             ),
             TextField(
+              onChanged: (texto){
+                minhaNovaConta.descricao = texto;
+              },
               decoration: InputDecoration(
                   labelText: "Breve descrição",
                   labelStyle: TextStyle(
@@ -58,6 +82,9 @@ class _NovaContaPageState extends State<NovaContaPage> {
                 ),
                 Expanded(
                   child: TextField(
+                    onChanged: (texto){
+                      minhaNovaConta.agencia = texto;
+                    },
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                         labelText: "Agencia",
@@ -74,6 +101,9 @@ class _NovaContaPageState extends State<NovaContaPage> {
              children: <Widget>[
                Expanded(
                  child: TextField(
+                   onChanged: (texto){
+                     minhaNovaConta.conta = texto;
+                   },
                    keyboardType: TextInputType.number,
                    decoration: InputDecoration(
                        labelText: "Conta",
@@ -88,6 +118,9 @@ class _NovaContaPageState extends State<NovaContaPage> {
                  child: Container(
                    width: 70,
                    child: TextField(
+                     onChanged: (texto){
+                       minhaNovaConta.digitoConta = texto;
+                     },
                      keyboardType: TextInputType.number,
                      decoration: InputDecoration(
                          labelText: "Digito",
@@ -101,6 +134,9 @@ class _NovaContaPageState extends State<NovaContaPage> {
              ],
             ),
             TextField(
+              onChanged: (texto){
+                minhaNovaConta.cpfCnpj = texto;
+              },
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: "Cpf/Cnpj",
@@ -117,7 +153,8 @@ class _NovaContaPageState extends State<NovaContaPage> {
              width: double.infinity,
              child: RaisedButton(
                  onPressed: (){
-
+                   contaHelper.salvarConta(minhaNovaConta);
+                   Navigator.pop(context);
                  },
                  color: Colors.lightGreen,
                  padding: EdgeInsets.all(10),
@@ -150,6 +187,7 @@ class _NovaContaPageState extends State<NovaContaPage> {
       onChanged: (String newValue){
         setState(() {
           tipoConta = newValue;
+          minhaNovaConta.tipo = newValue;
         });
       },
       items: <String>['Conta Corrente', 'Conta Poupança'].map<DropdownMenuItem<String>>((String value){
@@ -175,6 +213,7 @@ class _NovaContaPageState extends State<NovaContaPage> {
       onChanged: (String newValue){
         setState(() {
           dropDownValue = newValue;
+          minhaNovaConta.nomeBanco = newValue;
         });
       },
       items: <String>['Bradesco', 'Itau', 'Santander', 'NuBank', 'Banco Original', 'Neon', 'Banco do Brasil', 'Caixa']
